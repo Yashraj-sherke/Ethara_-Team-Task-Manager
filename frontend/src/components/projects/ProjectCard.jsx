@@ -1,47 +1,58 @@
-import { HiFolder, HiUsers, HiClipboardList } from 'react-icons/hi';
 import { Link } from 'react-router-dom';
+import { HiFolder, HiUsers, HiClipboardList, HiPencil, HiTrash } from 'react-icons/hi';
+import { formatDate } from '../../utils/helpers';
 
-const ProjectCard = ({ project }) => {
-  const { taskCounts = {} } = project;
-  const progress = taskCounts.total > 0 ? Math.round((taskCounts.completed / taskCounts.total) * 100) : 0;
+const ProjectCard = ({ project, isAdmin, onEdit, onDelete }) => {
+  const statusColors = {
+    active: 'bg-emerald-100 text-emerald-700 dark:bg-emerald-500/10 dark:text-emerald-400',
+    completed: 'bg-primary-100 text-primary-700 dark:bg-primary-500/10 dark:text-primary-400',
+    'on-hold': 'bg-amber-100 text-amber-700 dark:bg-amber-500/10 dark:text-amber-400',
+  };
 
   return (
-    <Link to={`/projects/${project._id}`} className="group block">
-      <div className="rounded-2xl bg-white p-6 shadow-sm border border-surface-100 hover:shadow-lg hover:border-primary-200 transition-all duration-300 hover:-translate-y-1">
-        <div className="flex items-start justify-between mb-4">
-          <div className="flex h-11 w-11 items-center justify-center rounded-xl bg-primary-50 text-primary-600 group-hover:bg-primary-100 transition-colors">
-            <HiFolder className="h-6 w-6" />
+    <div className="group rounded-2xl bg-white dark:bg-surface-900 p-5 sm:p-6 shadow-sm border border-surface-100 dark:border-surface-800 hover:shadow-lg hover:-translate-y-0.5 hover:border-primary-200 dark:hover:border-primary-500/30 transition-all duration-300">
+      <div className="flex items-start justify-between gap-2 mb-3 sm:mb-4">
+        <div className="flex items-center gap-3 min-w-0">
+          <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-primary-50 dark:bg-primary-500/10 group-hover:scale-110 transition-transform">
+            <HiFolder className="h-5 w-5 text-primary-600 dark:text-primary-400" />
           </div>
-          <span className={`inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-semibold ${project.status === 'active' ? 'bg-emerald-100 text-emerald-700' : project.status === 'completed' ? 'bg-sky-100 text-sky-700' : 'bg-surface-100 text-surface-600'}`}>
-            {project.status}
-          </span>
-        </div>
-
-        <h3 className="text-base font-semibold text-surface-900 mb-1 group-hover:text-primary-700 transition-colors truncate">{project.name}</h3>
-        <p className="text-sm text-surface-500 mb-4 line-clamp-2">{project.description}</p>
-
-        <div className="mb-4">
-          <div className="flex justify-between text-xs text-surface-500 mb-1.5">
-            <span>Progress</span>
-            <span className="font-semibold">{progress}%</span>
-          </div>
-          <div className="h-2 w-full rounded-full bg-surface-100 overflow-hidden">
-            <div className="h-full rounded-full bg-gradient-to-r from-primary-500 to-primary-600 transition-all duration-500" style={{ width: `${progress}%` }} />
+          <div className="min-w-0">
+            <Link to={`/projects/${project._id}`} className="text-sm sm:text-base font-semibold text-surface-900 dark:text-white hover:text-primary-600 dark:hover:text-primary-400 transition-colors truncate block">
+              {project.name}
+            </Link>
+            <span className={`inline-block rounded-full px-2 py-0.5 text-xs font-medium mt-1 ${statusColors[project.status] || statusColors.active}`}>
+              {project.status}
+            </span>
           </div>
         </div>
-
-        <div className="flex items-center justify-between text-xs text-surface-400">
-          <div className="flex items-center gap-1">
-            <HiUsers className="h-4 w-4" />
-            <span>{project.members?.length || 0} members</span>
+        {isAdmin && (
+          <div className="flex gap-0.5 opacity-0 group-hover:opacity-100 transition-opacity shrink-0">
+            <button onClick={(e) => { e.preventDefault(); onEdit(); }} className="p-1.5 rounded-lg text-surface-400 hover:text-primary-600 hover:bg-primary-50 dark:hover:bg-primary-500/10 transition-colors">
+              <HiPencil className="h-3.5 w-3.5" />
+            </button>
+            <button onClick={(e) => { e.preventDefault(); onDelete(); }} className="p-1.5 rounded-lg text-surface-400 hover:text-rose-600 hover:bg-rose-50 dark:hover:bg-rose-500/10 transition-colors">
+              <HiTrash className="h-3.5 w-3.5" />
+            </button>
           </div>
-          <div className="flex items-center gap-1">
-            <HiClipboardList className="h-4 w-4" />
-            <span>{taskCounts.total || 0} tasks</span>
-          </div>
-        </div>
+        )}
       </div>
-    </Link>
+
+      {project.description && (
+        <p className="text-xs sm:text-sm text-surface-500 dark:text-surface-400 mb-3 sm:mb-4 line-clamp-2">{project.description}</p>
+      )}
+
+      <div className="flex flex-wrap items-center gap-3 sm:gap-4 text-xs text-surface-400 dark:text-surface-500 pt-3 border-t border-surface-100 dark:border-surface-800">
+        <div className="flex items-center gap-1.5">
+          <HiUsers className="h-3.5 w-3.5" />
+          <span>{project.members?.length || 0}</span>
+        </div>
+        <div className="flex items-center gap-1.5">
+          <HiClipboardList className="h-3.5 w-3.5" />
+          <span>{project.taskCount || 0} tasks</span>
+        </div>
+        <span className="ml-auto">{formatDate(project.createdAt)}</span>
+      </div>
+    </div>
   );
 };
 

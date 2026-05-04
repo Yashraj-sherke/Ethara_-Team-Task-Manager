@@ -19,26 +19,26 @@ const Members = () => {
   if (loading) return <LoadingSpinner />;
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-5 sm:space-y-6 animate-fade-in">
       <div>
-        <h1 className="text-2xl font-bold text-surface-900">Team Members</h1>
-        <p className="text-sm text-surface-500 mt-1">{users.length} members</p>
+        <h1 className="text-xl sm:text-2xl font-bold text-surface-900 dark:text-white">Team Members</h1>
+        <p className="text-xs sm:text-sm text-surface-500 dark:text-surface-400 mt-1">{users.length} members</p>
       </div>
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+      <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-4 sm:gap-5">
         {users.map((u) => (
-          <div key={u._id} className="rounded-2xl bg-white p-6 shadow-sm border border-surface-100 hover:shadow-md transition-all duration-200">
-            <div className="flex items-center gap-4">
-              <div className="flex h-12 w-12 items-center justify-center rounded-full bg-gradient-to-br from-primary-400 to-primary-600 text-base font-bold text-white shadow-md">
+          <div key={u._id} className="group rounded-2xl bg-white dark:bg-surface-900 p-5 sm:p-6 shadow-sm border border-surface-100 dark:border-surface-800 hover:shadow-lg hover:-translate-y-0.5 hover:border-primary-200 dark:hover:border-primary-500/30 transition-all duration-300">
+            <div className="flex items-center gap-3 sm:gap-4">
+              <div className="flex h-11 w-11 sm:h-12 sm:w-12 items-center justify-center rounded-full bg-gradient-to-br from-primary-400 to-primary-600 text-sm sm:text-base font-bold text-white shadow-md group-hover:scale-110 transition-transform">
                 {getInitials(u.name)}
               </div>
-              <div className="min-w-0">
-                <p className="text-base font-semibold text-surface-900 truncate">{u.name}</p>
-                <p className="text-sm text-surface-400 truncate">{u.email}</p>
+              <div className="min-w-0 flex-1">
+                <p className="text-sm sm:text-base font-semibold text-surface-900 dark:text-white truncate">{u.name}</p>
+                <p className="text-xs sm:text-sm text-surface-400 dark:text-surface-500 truncate">{u.email}</p>
               </div>
             </div>
             <div className="mt-4 flex items-center justify-between">
               <Badge variant={u.role === 'admin' ? 'primary' : 'success'}>{u.role}</Badge>
-              <span className="text-xs text-surface-400">Joined {new Date(u.createdAt).toLocaleDateString()}</span>
+              <span className="text-xs text-surface-400 dark:text-surface-500">Joined {new Date(u.createdAt).toLocaleDateString()}</span>
             </div>
           </div>
         ))}
