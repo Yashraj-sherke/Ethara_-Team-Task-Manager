@@ -2,11 +2,12 @@
   "name": "ethara-team-task-manager",
   "version": "1.0.0",
   "description": "Team Task Manager - Full Stack Application",
+  "engines": {
+    "node": ">=20.0.0"
+  },
   "scripts": {
     "install-all": "cd backend && npm install && cd ../frontend && npm install --legacy-peer-deps",
     "build": "cd frontend && npm run build && mkdir -p ../backend/public && cp -r dist/* ../backend/public/",
-    "build:win": "cd frontend && npm run build && if not exist ..\\backend\\public mkdir ..\\backend\\public && xcopy dist\\* ..\\backend\\public\\ /s /e /y",
-    "start": "cd backend && node server.js",
-    "dev": "concurrently \"cd backend && npm run dev\" \"cd frontend && npm run dev\""
+    "start": "cd backend && node server.js"
   }
 }
