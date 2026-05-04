@@ -9,15 +9,11 @@ const connectDB = require('./config/db');
 const errorHandler = require('./middleware/errorHandler');
 
 dotenv.config();
-connectDB();
 
 const app = express();
 
 app.use(helmet({ contentSecurityPolicy: false }));
-app.use(cors({
-  origin: true,
-  credentials: true
-}));
+app.use(cors({ origin: true, credentials: true }));
 
 const limiter = rateLimit({
   windowMs: 15 * 60 * 1000,
@@ -29,10 +25,8 @@ app.use('/api/', limiter);
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 
-if (process.env.NODE_ENV === 'development') {
+if (process.env.NODE_ENV !== 'production') {
   app.use(morgan('dev'));
-} else {
-  app.use(morgan('combined'));
 }
 
 // API Routes
@@ -47,16 +41,25 @@ app.get('/api/health', (req, res) => {
 });
 
 // Serve frontend in production
-if (process.env.NODE_ENV === 'production') {
-  app.use(express.static(path.join(__dirname, 'public')));
-  app.get('*', (req, res) => {
-    res.sendFile(path.join(__dirname, 'public', 'index.html'));
-  });
-}
+const publicPath = path.join(__dirname, 'public');
+app.use(express.static(publicPath));
+app.get('*', (req, res) => {
+  res.sendFile(path.join(publicPath, 'index.html'));
+});
 
 app.use(errorHandler);
 
 const PORT = process.env.PORT || 5000;
-app.listen(PORT, () => {
-  console.log(`Server running in ${process.env.NODE_ENV || 'development'} mode on port ${PORT}`);
+
+// Connect to DB then start server
+connectDB().then(() => {
+  app.listen(PORT, '0.0.0.0', () => {
+    console.log(`Server running on port ${PORT}`);
+  });
+}).catch((err) => {
+  console.error('Failed to connect to MongoDB:', err.message);
+  // Start server anyway so Railway doesn't mark as crashed
+  app.listen(PORT, '0.0.0.0', () => {
+    console.log(`Server running on port ${PORT} (DB connection failed)`);
+  });
 });
