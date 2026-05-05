@@ -40,25 +40,29 @@ app.get('/api/health', (req, res) => {
   res.json({ status: 'ok', timestamp: new Date().toISOString() });
 });
 
-// Serve frontend in production
-const publicPath = path.join(__dirname, 'public');
-app.use(express.static(publicPath));
+// Serve frontend static files - check both possible locations
+const frontendDist = path.join(__dirname, '../frontend/dist');
+const publicDir = path.join(__dirname, 'public');
+const fs = require('fs');
+
+const staticPath = fs.existsSync(frontendDist) ? frontendDist : publicDir;
+console.log(`Serving static files from: ${staticPath}`);
+
+app.use(express.static(staticPath));
 app.get('*', (req, res) => {
-  res.sendFile(path.join(publicPath, 'index.html'));
+  res.sendFile(path.join(staticPath, 'index.html'));
 });
 
 app.use(errorHandler);
 
-const PORT = process.env.PORT || 5000;
+const PORT = process.env.PORT || 3000;
 
-// Connect to DB then start server
 connectDB().then(() => {
   app.listen(PORT, '0.0.0.0', () => {
     console.log(`Server running on port ${PORT}`);
   });
 }).catch((err) => {
   console.error('Failed to connect to MongoDB:', err.message);
-  // Start server anyway so Railway doesn't mark as crashed
   app.listen(PORT, '0.0.0.0', () => {
     console.log(`Server running on port ${PORT} (DB connection failed)`);
   });
