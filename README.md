@@ -1,4 +1,4 @@
-<![CDATA[<div align="center">
+<div align="center">
 
 # 🏗️ Ethara — Team Task Manager
 
@@ -381,4 +381,3 @@ This project is licensed under the **MIT License** — see the [LICENSE](LICENSE
 **Built with ❤️ by [Yashraj Sherke](https://github.com/Yashraj-sherke)**
 
 </div>
-]]>
